@@ -13,12 +13,15 @@ app.get('/',(req,res)=>{
 //socket.on listen to the event emitter which is 'chat message;(server listens to a specific user)
 //socket.emit emit to the event eemitter (server to specific-user / or vice-versa)
 //io.emit:- take the message from emit emitter and display it to the server(server to all user)
-io.on('connection',(socket)=>{
+io.on('connection',(socket)=>{ 
 console.log("a user connected")
 console.log(socket.id);
+socket.on('join room',(room)=>{ //act as a connector to a room(create a set of different socket)
+    socket.join(room);
+})
 socket.on('chat message', (msg) => {
-    io.emit('chat message',msg)
-    console.log('message: ' + msg);
+    io.to(msg.room).emit('chat message',msg.text) //act as a sender to (a set of socket)
+    console.log("user",socket.id,'message: ' + msg.text);
   });
   
 })

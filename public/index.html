@@ -18,22 +18,33 @@
   <body>
     <ul id="messages"></ul>
     <form id="form" action="">
+      <input id="room" type="text"/><button type="button"  id="join">Join Room</button>
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
     <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io();
   let input=document.getElementById("input")
+  let room=document.getElementById("room")
   let form=document.getElementById("form");
+  let join=document.getElementById("join");
+  join.addEventListener('click',(e)=>{
+    e.preventDefault();
+    socket.emit('join room',room.value);
+  })
   form.addEventListener('submit',(e)=>{
     e.preventDefault();
-    console.log(input.value)
+    let data={};
+    data.text=input.value;
+    data.room=room.value;
     if(input.value){
-      socket.emit('chat message',input.value)
+      socket.emit('chat message',data)
       input.value=''
     }
   })
+  //act as receiver
   socket.on('chat message', (msg) => {
+    console.log(msg);
     const item = document.createElement('li'); // Create a new list item
     item.textContent = msg; // Put the text inside it
     document.getElementById('messages').appendChild(item); // Attach it to the screen
